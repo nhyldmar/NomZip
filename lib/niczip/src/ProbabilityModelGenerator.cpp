@@ -22,10 +22,17 @@ namespace nz {
 	}
 	
 	ProbabilityModelGenerator::ProbabilityModelGenerator() {
-		// TODO: Extend to multi-character symbols and non-UTF-8 characters.
-		this->probabilityModel["\n"];
+		this->setTemplateModel();
+	}
+	
+	void ProbabilityModelGenerator::setTemplateModel() {
+		// TODO: Extend to multi-character symbols.
+		// TODO: Extend to non-UTF-8 characters.
+		this->probabilityModel.clear();
 		
-		for (int a = 32; a <= 126; a++) {
+		this->probabilityModel["\n"]; // '\n'(10) isn't in the range of the other characters
+		
+		for (int a = 32; a <= 126; a++) { // Add UTF-8 characters from ' '(32) to '~'(126)
 			std::string symbol(1, a);
 			this->probabilityModel[symbol];
 		}

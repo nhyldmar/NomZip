@@ -7,11 +7,8 @@
 #include "cxxopts.hpp"
 
 #include <string>
-#include <vector>
-
 #include <iostream>
 #include <fstream>
-#include <streambuf>
 #include <memory>
 #include <sys/stat.h>
 
@@ -29,7 +26,7 @@ int main(int argc, char **argv) {
 	
 	options.add_options()
 			("source", "Source filename", cxxopts::value<std::string>())
-			("model", "Model filename", cxxopts::value<std::string>()->default_value("model.json"));
+			("model", "Model filename", cxxopts::value<std::string>()->default_value("model.nzm"));
 	
 	auto result = options.parse(argc, argv);
 	
@@ -54,10 +51,10 @@ int main(int argc, char **argv) {
 	sourceFile.close();
 	
 	// -------------------------------------------------------------------------------- Generate Probability Model
-	nz::ProbabilityModelGenerator probabilityModelGenerator;
+	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator>();
 	if (fileExists(modelFilename)) {
-		probabilityModelGenerator.loadModel(modelFilename);
+		probabilityModelGenerator->loadModel(modelFilename);
 	}
-	probabilityModelGenerator.processData(fileContent);
-	probabilityModelGenerator.writeModel(modelFilename);
+	probabilityModelGenerator->processData(fileContent);
+	probabilityModelGenerator->writeModel(modelFilename);
 }

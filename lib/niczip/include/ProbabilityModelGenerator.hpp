@@ -14,6 +14,8 @@ namespace nz {
 	public:
 		ProbabilityModelGenerator();
 		
+		void setTemplateModel();
+		
 		void setWeight(float weight);
 		
 		void loadModel(std::string &filename);
