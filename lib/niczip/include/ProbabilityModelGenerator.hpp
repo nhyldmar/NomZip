@@ -8,27 +8,30 @@
 #include "nlohmann/json.hpp"
 
 #include <string>
+#include <vector>
+#include <map>
 
 namespace nz {
+	template <typename SymbolType>
 	class ProbabilityModelGenerator {
 	public:
 		ProbabilityModelGenerator();
 		
 		void setTemplateModel();
 		
-		void setWeight(float weight);
+		void setBias(float &b);
 		
 		void loadModel(std::string &filename);
 		
 		void writeModel(std::string &filename);
 		
-		void processData(std::string &data);
+		void processData(std::vector<SymbolType> &data);
 		
-		nlohmann::json getModel();
+		std::map<SymbolType, float> getModel();
 	
 	private:
-		nlohmann::json probabilityModel = {};
-		float weight = 0;
+		std::map<SymbolType, float> probabilityModel = {};
+		float bias = 0;
 	};
 }
 

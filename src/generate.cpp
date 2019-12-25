@@ -41,20 +41,18 @@ int main(int argc, char **argv) {
 	std::fstream sourceFile(sourceFilename);
 	
 	if (!sourceFile.is_open()) {
-		std::cerr << "Unable to open " << sourceFilename;
+		std::cerr << "Unable to read from " << sourceFilename;
 		return 1;
 	}
 	
-	// NOTE: This is probably a bad way of doing it, maybe better reading buffers of the maximum symbol length
-	// Credit: https://stackoverflow.com/a/116220
-	auto fileContent = std::string((std::istreambuf_iterator<char>(sourceFile)), std::istreambuf_iterator<char>());
+	std::vector<char> byteVector((std::istream_iterator<char>(sourceFile)), std::istream_iterator<char>()); // Read file
 	sourceFile.close();
 	
 	// -------------------------------------------------------------------------------- Generate Probability Model
-	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator>();
+	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator<char>>();
 	if (fileExists(modelFilename)) {
 		probabilityModelGenerator->loadModel(modelFilename);
 	}
-	probabilityModelGenerator->processData(fileContent);
+	probabilityModelGenerator->processData(byteVector);
 	probabilityModelGenerator->writeModel(modelFilename);
 }

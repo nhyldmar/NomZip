@@ -4,12 +4,20 @@
 
 #include "ProbabilityModelGenerator.hpp"
 
+#include "MapUtilities.hpp"
+
+#include <sys/stat.h>
 #include <iostream>
 #include <fstream>
 
 namespace nz {
+	inline bool fileExists(const std::string &name) {
+		// Credit: https://stackoverflow.com/a/12774387
+		struct stat buffer{};
+		return (stat(name.c_str(), &buffer) == 0);
+	}
+	
 	int count(const std::string &string, const std::string &substring) {
-		// TODO: Place this somewhere better
 		// Credit: https://stackoverflow.com/a/22315816
 		int count = 0;
 		size_t nPos = string.find(substring, 0); // first occurrence
@@ -21,67 +29,113 @@ namespace nz {
 		return count;
 	}
 	
-	ProbabilityModelGenerator::ProbabilityModelGenerator() {
+	template <typename SymbolType>
+	ProbabilityModelGenerator<SymbolType>::ProbabilityModelGenerator() {
 		this->setTemplateModel();
 	}
 	
-	void ProbabilityModelGenerator::setTemplateModel() {
-		// TODO: Extend to multi-character symbols.
-		// TODO: Extend to non-UTF-8 characters.
+	template <typename SymbolType>
+	void ProbabilityModelGenerator<SymbolType>::setTemplateModel() {
+		// TODO: Extend to variable length symbols.
 		this->probabilityModel.clear();
 		
-		this->probabilityModel["\n"]; // '\n'(10) isn't in the range of the other characters
-		
-		for (int a = 32; a <= 126; a++) { // Add UTF-8 characters from ' '(32) to '~'(126)
-			std::string symbol(1, a);
-			this->probabilityModel[symbol];
+		for (int symbol = 0; symbol <= 126; symbol++) {
+			this->probabilityModel[symbol] = 0;
 		}
 	}
 	
-	void ProbabilityModelGenerator::setWeight(float w) {
-		this->weight = w;
+	template <typename SymbolType>
+	void ProbabilityModelGenerator<SymbolType>::setBias(float &b) {
+		this->bias = b;
 	}
 	
-	void ProbabilityModelGenerator::loadModel(std::string &filename) {
+	template <typename SymbolType>
+	void ProbabilityModelGenerator<SymbolType>::loadModel(std::string &filename) {
+		this->probabilityModel.clear();
+		
 		std::ifstream file(filename);
 		
-		if (file.is_open()) {
-			file >> this->weight;
-			file >> this->probabilityModel;
-		} else {
-			std::cout << "Unable to read from " << filename << std::endl;
+		if (!file.is_open()) {
+			std::cerr << "Unable to read from " << filename << std::endl;
 		}
+		
+		SymbolType key;
+		float value;
+		
+		size_t keySize = sizeof(key);
+		size_t valueSize = sizeof(value);
+		
+		char *keyBuffer = new char[keySize];
+		char *valueBuffer = new char[valueSize];
+		
+		while (file.tellg() < file.eof()) {
+			file.read(keyBuffer, keySize);
+			file.read(valueBuffer, valueSize);
+			
+			key = static_cast<SymbolType>(*keyBuffer);
+			value = static_cast<float>(*valueBuffer);
+			
+			this->probabilityModel[key] = value;
+		}
+		
+		std::cout << this->probabilityModel << std::endl;
 	}
 	
-	void ProbabilityModelGenerator::writeModel(std::string &filename) {
+	template <typename SymbolType>
+	void ProbabilityModelGenerator<SymbolType>::writeModel(std::string &filename) {
+		// NOTE: Should probably put weight in the file
 		std::ofstream file(filename);
 		
-		if (file.is_open()) {
-			file << this->weight;
-			file << this->probabilityModel;
+		if (!file.is_open()) {
+			std::cerr << "Unable to write to file " << filename << std::endl;
 		}
+		
+		SymbolType key;
+		float value;
+		
+		size_t keySize = sizeof(key);
+		size_t valueSize = sizeof(value);
+		
+		for (auto &pair : this->probabilityModel) {
+			key = pair.first;
+			value = pair.second;
+			
+			file.write((char *) &key, keySize);
+			file.write((char *) &value, valueSize);
+		}
+		
+		std::cout << this->probabilityModel << std::endl;
 	}
 	
-	nlohmann::json ProbabilityModelGenerator::getModel() {
+	template <typename SymbolType>
+	std::map<SymbolType, float> ProbabilityModelGenerator<SymbolType>::getModel() {
 		return this->probabilityModel;
 	}
 	
-	void ProbabilityModelGenerator::processData(std::string &data) {
+	template <typename SymbolType>
+	void ProbabilityModelGenerator<SymbolType>::processData(std::vector<SymbolType> &data) {
 		// NOTE: Probably a better way of doing this
 		float totalCount = 0;
 		
-		for (auto &entry : this->probabilityModel.items()) {
-			float count = this->weight * static_cast<float>(entry.value());
-			count += static_cast<float>(nz::count(data, entry.key()));
+		for (auto &pair : this->probabilityModel) {
+			auto symbol = pair.first;
+			auto probability = pair.second;
+			
+			float count = this->bias * probability;
+			// NOTE: Probably doesn't work for SymbolType != char
+			count += std::count(data.begin(), data.end(), symbol);
 			
 			totalCount += count;
-			entry.value() = count;
+			pair.second = count;
 		}
 		
-		for (auto &entry : this->probabilityModel.items()) {
-			entry.value() = static_cast<float>(entry.value()) / totalCount;
+		for (auto &pair : this->probabilityModel) {
+			pair.second /= totalCount;
 		}
 		
-		this->weight = totalCount;
+		this->bias = totalCount;
 	}
+	
+	// Linker, why must you be this way
+	template class ProbabilityModelGenerator<char>;
 }

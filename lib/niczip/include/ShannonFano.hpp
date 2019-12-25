@@ -5,33 +5,39 @@
 #ifndef NICZIP_SHANNONFANO_HPP
 #define NICZIP_SHANNONFANO_HPP
 
-#include "ExtendedTree.hpp"
-
-#include "nlohmann/json.hpp"
+#include "MapUtilities.hpp"
 
 #include <string>
 #include <map>
 #include <algorithm>
 
 namespace nz {
-	// Credit: https://stackoverflow.com/a/5056797
-	template<typename A, typename B>
-	std::pair<B, A> flip_pair(const std::pair<A, B> &p) {
-		return std::pair<B, A>(p.second, p.first);
-	}
-	
-	template<typename A, typename B>
-	std::multimap<B, A> flip_map(const std::map<A, B> &src) {
-		std::multimap<B, A> dst;
-		std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()), flip_pair<A, B>);
-		return dst;
-	}
-	
-	static nlohmann::json shannonFano(nlohmann::json &probabilityModel) {
+	template<typename SymbolType>
+	static std::map<SymbolType, int> shannonFano(const std::map<SymbolType, float> &probabilityMap) {
+		std::cout << probabilityMap << std::endl;
+		
 		// Sort model by value in decreasing order
+		auto flippedProabilityMap = flip_map(probabilityMap);
+		delete probabilityMap;
+		
+		std::cout << flippedProabilityMap << std::endl;
 		
 		// Replace probabilities with cumulative probability up to that point
+		std::multimap<float, SymbolType> cumulativeProbabilityMap;
 		
+		float totalProbability = 0;
+		for (auto &pair : flippedProabilityMap) {
+			auto probability = pair.first;
+			auto symbol = pair.second;
+			
+			totalProbability += probability;
+			cumulativeProbabilityMap.insert({totalProbability, symbol});
+		}
+		delete flippedProabilityMap;
+		
+		std::cout << cumulativeProbabilityMap << std::endl;
+		
+		std::map<SymbolType, int> codeTable;
 		// For each symbol
 			// Compute codeword length using ceil(-log_2(probability))
 			
@@ -44,6 +50,7 @@ namespace nz {
 			// Assign codeword in code table
 			
 		// Return code table
+		return codeTable;
 	}
 }
 

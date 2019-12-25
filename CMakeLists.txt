@@ -19,3 +19,4 @@ add_executable(generate src/generate.cpp)
 target_link_libraries(generate niczip)
 
 add_executable(test tests/test.cpp)
+target_link_libraries(test niczip)
