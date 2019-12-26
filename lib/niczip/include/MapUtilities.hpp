@@ -8,25 +8,44 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
+// NOTE: Don't template both map types together, otherwise arrays will get confused
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::map<KeyType, ValueType> &map) {
-	for (auto &pair : map) {
-		ostream << pair.first << ' ' << pair.second << '\n';
+	ostream << '[';
+
+	for(auto iterator = map.begin(); iterator != map.end(); iterator++) {
+		if (iterator != map.begin()) {
+			ostream << ',';
+		}
+		
+		ostream << '\'' << iterator->first << '\'' << ':' << iterator->second;
 	}
 	
+	ostream << ']';
+
 	return ostream;
 }
 
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::multimap<KeyType, ValueType> &map) {
-	for (auto &pair : map) {
-		ostream << pair.first << ' ' << pair.second << '\n';
+	ostream << '[';
+	
+	for(auto iterator = map.begin(); iterator != map.end(); iterator++) {
+		if (iterator != map.begin()) {
+			ostream << ',';
+		}
+		
+		ostream << '\'' << iterator->first << '\'' << ':' << iterator->second;
 	}
+	
+	ostream << ']';
 	
 	return ostream;
 }
 
+// NOTE: Should probably be avoided as it won't behave as expected anymore
 template<typename KeyType, typename ValueType>
 std::istream &operator>>(std::istream &istream, std::map<KeyType, ValueType> &map) {
 	KeyType key;

@@ -5,8 +5,6 @@
 #ifndef NICZIP_PROBABILITYMODELGENERATOR_HPP
 #define NICZIP_PROBABILITYMODELGENERATOR_HPP
 
-#include "nlohmann/json.hpp"
-
 #include <string>
 #include <vector>
 #include <map>

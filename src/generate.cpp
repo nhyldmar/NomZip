@@ -3,6 +3,7 @@
 //
 
 #include "ProbabilityModelGenerator.hpp"
+#include "MapUtilities.hpp"
 
 #include "cxxopts.hpp"
 
