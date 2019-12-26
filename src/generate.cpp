@@ -46,6 +46,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	
+	sourceFile.unsetf(std::ios::skipws);
+	
 	std::vector<char> byteVector((std::istream_iterator<char>(sourceFile)), std::istream_iterator<char>()); // Read file
 	sourceFile.close();
 	

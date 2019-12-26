@@ -10,7 +10,7 @@
 #include <map>
 
 namespace nz {
-	template <typename SymbolType>
+	template<typename SymbolType>
 	class ProbabilityModelGenerator {
 	public:
 		ProbabilityModelGenerator();

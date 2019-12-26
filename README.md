@@ -1,6 +1,4 @@
 # NicZip
 
 ## TODO
-* Replace jsons with maps
-* Compress directories
-* Compress images
+* Extend symbol size past 8 bits.

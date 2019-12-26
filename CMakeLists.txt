@@ -7,7 +7,6 @@ set(EXECUTABLE_OUTPUT_PATH bin/)
 set(LIBRARY_OUTPUT_PATH lib/)
 
 include_directories(lib/cxxopts/include)
-include_directories(lib/json/include)
 
 include_directories(lib/niczip/include)
 add_library(niczip lib/niczip/src/ProbabilityModelGenerator.cpp)

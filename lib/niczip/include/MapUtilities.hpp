@@ -10,21 +10,22 @@
 #include <iostream>
 #include <algorithm>
 
+// TODO: Figure out how to get '\n', '\r', ... from characters
 // NOTE: Don't template both map types together, otherwise arrays will get confused
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::map<KeyType, ValueType> &map) {
 	ostream << '[';
-
-	for(auto iterator = map.begin(); iterator != map.end(); iterator++) {
+	
+	for (auto iterator = map.begin(); iterator != map.end(); iterator++) {
 		if (iterator != map.begin()) {
 			ostream << ',';
 		}
 		
-		ostream << '\'' << iterator->first << '\'' << ':' << iterator->second;
+		ostream << iterator->first << ':' << iterator->second;
 	}
 	
 	ostream << ']';
-
+	
 	return ostream;
 }
 
@@ -32,12 +33,12 @@ template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::multimap<KeyType, ValueType> &map) {
 	ostream << '[';
 	
-	for(auto iterator = map.begin(); iterator != map.end(); iterator++) {
+	for (auto iterator = map.begin(); iterator != map.end(); iterator++) {
 		if (iterator != map.begin()) {
 			ostream << ',';
 		}
 		
-		ostream << '\'' << iterator->first << '\'' << ':' << iterator->second;
+		ostream << iterator->first << ':' << iterator->second;
 	}
 	
 	ostream << ']';

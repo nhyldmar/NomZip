@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 	auto modelFilename = result["model"].as<std::string>();
 	
 	// -------------------------------------------------------------------------------- Load model
-	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator<int>>();
+	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator<char>>();
 	if (fileExists(modelFilename)) {
 		probabilityModelGenerator->loadModel(modelFilename);
 	} else {
