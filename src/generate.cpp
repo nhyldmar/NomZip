@@ -52,6 +52,8 @@ int main(int argc, char **argv) {
 	auto probabilityModelGenerator = std::make_shared<nz::ProbabilityModelGenerator<char>>();
 	if (fileExists(modelFilename)) {
 		probabilityModelGenerator->loadModel(modelFilename);
+	} else {
+		probabilityModelGenerator->setTemplateModel();
 	}
 	probabilityModelGenerator->processData(byteVector);
 	probabilityModelGenerator->writeModel(modelFilename);

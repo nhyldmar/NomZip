@@ -29,27 +29,25 @@ namespace nz {
 		return count;
 	}
 	
-	template <typename SymbolType>
-	ProbabilityModelGenerator<SymbolType>::ProbabilityModelGenerator() {
-		this->setTemplateModel();
-	}
+	template<typename SymbolType>
+	ProbabilityModelGenerator<SymbolType>::ProbabilityModelGenerator() = default;
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	void ProbabilityModelGenerator<SymbolType>::setTemplateModel() {
 		// TODO: Extend to variable length symbols.
 		this->probabilityModel.clear();
 		
-		for (int symbol = 0; symbol <= 126; symbol++) {
+		for (int symbol = 0; symbol <= 127; symbol++) {
 			this->probabilityModel[symbol] = 0;
 		}
 	}
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	void ProbabilityModelGenerator<SymbolType>::setBias(float &b) {
 		this->bias = b;
 	}
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	void ProbabilityModelGenerator<SymbolType>::loadModel(std::string &filename) {
 		this->probabilityModel.clear();
 		
@@ -59,29 +57,18 @@ namespace nz {
 			std::cerr << "Unable to read from " << filename << std::endl;
 		}
 		
-		SymbolType key;
-		float value;
-		
-		size_t keySize = sizeof(key);
-		size_t valueSize = sizeof(value);
-		
-		char *keyBuffer = new char[keySize];
-		char *valueBuffer = new char[valueSize];
-		
-		while (file.tellg() < file.eof()) {
-			file.read(keyBuffer, keySize);
-			file.read(valueBuffer, valueSize);
+		while (file.peek() != EOF) {
+			SymbolType key;
+			float value;
 			
-			key = static_cast<SymbolType>(*keyBuffer);
-			value = static_cast<float>(*valueBuffer);
+			file.read((char *) &key, sizeof(key));
+			file.read((char *) &value, sizeof(value));
 			
 			this->probabilityModel[key] = value;
 		}
-		
-		std::cout << this->probabilityModel << std::endl;
 	}
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	void ProbabilityModelGenerator<SymbolType>::writeModel(std::string &filename) {
 		// NOTE: Should probably put weight in the file
 		std::ofstream file(filename);
@@ -90,29 +77,22 @@ namespace nz {
 			std::cerr << "Unable to write to file " << filename << std::endl;
 		}
 		
-		SymbolType key;
-		float value;
-		
-		size_t keySize = sizeof(key);
-		size_t valueSize = sizeof(value);
-		
-		for (auto &pair : this->probabilityModel) {
-			key = pair.first;
-			value = pair.second;
+		for (std::pair<SymbolType, float> pair : this->probabilityModel) {
+			// NOTE: auto will actually assign type int to a char which is 4 bytes instead of 1
+			auto key = pair.first;
+			auto value = pair.second;
 			
-			file.write((char *) &key, keySize);
-			file.write((char *) &value, valueSize);
+			file.write((char *) &key, sizeof(key));
+			file.write((char *) &value, sizeof(value));
 		}
-		
-		std::cout << this->probabilityModel << std::endl;
 	}
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	std::map<SymbolType, float> ProbabilityModelGenerator<SymbolType>::getModel() {
 		return this->probabilityModel;
 	}
 	
-	template <typename SymbolType>
+	template<typename SymbolType>
 	void ProbabilityModelGenerator<SymbolType>::processData(std::vector<SymbolType> &data) {
 		// NOTE: Probably a better way of doing this
 		float totalCount = 0;
@@ -137,5 +117,6 @@ namespace nz {
 	}
 	
 	// Linker, why must you be this way
-	template class ProbabilityModelGenerator<char>;
+	template
+	class ProbabilityModelGenerator<char>;
 }
