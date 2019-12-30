@@ -50,5 +50,5 @@ int main(int argc, char **argv) {
 	
 	// -------------------------------------------------------------------------------- Generate code table
 	auto codeTable = nz::shannonFano(probabilityModel);
-	std::cout << codeTable << std::endl;
+	std::cout << "Code table: " << codeTable << std::endl;
 }

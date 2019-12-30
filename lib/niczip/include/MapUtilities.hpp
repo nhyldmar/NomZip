@@ -10,18 +10,25 @@
 #include <iostream>
 #include <algorithm>
 
+template<typename KeyType, typename ValueType>
+std::ostream &operator<<(std::ostream &ostream, const std::pair<KeyType, ValueType> &pair) {
+	ostream << pair.first << ':' << pair.second;
+	
+	return ostream;
+}
+
 // TODO: Figure out how to get '\n', '\r', ... from characters
 // NOTE: Don't template both map types together, otherwise arrays will get confused
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::map<KeyType, ValueType> &map) {
 	ostream << '[';
 	
-	for (auto iterator = map.begin(); iterator != map.end(); iterator++) {
-		if (iterator != map.begin()) {
+	for (auto iterator = map.cbegin(); iterator != map.cend(); iterator++) {
+		if (iterator != map.cbegin()) {
 			ostream << ',';
 		}
 		
-		ostream << iterator->first << ':' << iterator->second;
+		ostream << *iterator;
 	}
 	
 	ostream << ']';
@@ -33,12 +40,12 @@ template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::multimap<KeyType, ValueType> &map) {
 	ostream << '[';
 	
-	for (auto iterator = map.begin(); iterator != map.end(); iterator++) {
-		if (iterator != map.begin()) {
+	for (auto iterator = map.cbegin(); iterator != map.cend(); iterator++) {
+		if (iterator != map.cbegin()) {
 			ostream << ',';
 		}
 		
-		ostream << iterator->first << ':' << iterator->second;
+		ostream << *iterator;
 	}
 	
 	ostream << ']';
