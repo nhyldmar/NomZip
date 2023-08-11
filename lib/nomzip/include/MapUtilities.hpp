@@ -1,9 +1,9 @@
 //
-// Created by Nicholas Hyldmar on 21/12/2019.
+// Created by Naomi Hyldmar on 21/12/2019.
 //
 
-#ifndef NICZIP_MAPUTILITIES_HPP
-#define NICZIP_MAPUTILITIES_HPP
+#ifndef NOMZIP_MAPUTILITIES_HPP
+#define NOMZIP_MAPUTILITIES_HPP
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::pair<KeyType, ValueType> &pair) {
 	ostream << pair.first << ':' << pair.second;
-	
+
 	return ostream;
 }
 
@@ -22,34 +22,34 @@ std::ostream &operator<<(std::ostream &ostream, const std::pair<KeyType, ValueTy
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::map<KeyType, ValueType> &map) {
 	ostream << '[';
-	
+
 	for (auto iterator = map.cbegin(); iterator != map.cend(); iterator++) {
 		if (iterator != map.cbegin()) {
 			ostream << ',';
 		}
-		
+
 		ostream << *iterator;
 	}
-	
+
 	ostream << ']';
-	
+
 	return ostream;
 }
 
 template<typename KeyType, typename ValueType>
 std::ostream &operator<<(std::ostream &ostream, const std::multimap<KeyType, ValueType> &map) {
 	ostream << '[';
-	
+
 	for (auto iterator = map.cbegin(); iterator != map.cend(); iterator++) {
 		if (iterator != map.cbegin()) {
 			ostream << ',';
 		}
-		
+
 		ostream << *iterator;
 	}
-	
+
 	ostream << ']';
-	
+
 	return ostream;
 }
 
@@ -58,11 +58,11 @@ template<typename KeyType, typename ValueType>
 std::istream &operator>>(std::istream &istream, std::map<KeyType, ValueType> &map) {
 	KeyType key;
 	ValueType value;
-	
+
 	while (istream >> key >> value) {
 		map[key] = value;
 	}
-	
+
 	return istream;
 }
 
@@ -70,11 +70,11 @@ template<typename KeyType, typename ValueType>
 std::istream &operator>>(std::istream &istream, std::multimap<KeyType, ValueType> &map) {
 	KeyType key;
 	ValueType value;
-	
+
 	while (istream >> key >> value) {
 		map[key] = value;
 	}
-	
+
 	return istream;
 }
 
@@ -93,4 +93,4 @@ std::multimap<B, A> flip_map(const M<A, B, Args...> &src) {
 	return dst;
 }
 
-#endif //NICZIP_MAPUTILITIES_HPP
+#endif //NOMZIP_MAPUTILITIES_HPP
